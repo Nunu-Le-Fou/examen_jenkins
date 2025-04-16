@@ -1,0 +1,38 @@
+﻿# values.yaml
+
+image:
+  repository: container_image #container image , to replace the image name
+  pullPolicy: IfNotPresent
+  tag: container_tag #container tag, to replace the tag
+
+command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
+
+envFile: ./gateway/.env
+
+ports:
+  - containerPort: 8000
+    hostPort: 8001
+
+volumes:
+  - ./gateway:/app
+
+dependsOn:
+  - users
+  - orders
+
+serviceAccount:
+  create: true  # Set to true if you want to create a service account, false if not
+  name: my-gateway-serviceaccount # Optional: Provide a name if you have a specific service account name in mind
+
+ingress:
+  enabled: false
+
+autoscaling:
+  enabled: true  # Définissez sur true pour activer l'autoscaling, false pour le désactiver
+  minReplicas: 1  # Nombre minimum de réplicas
+  maxReplicas: 3  # Nombre maximum de réplicas
+  targetCPUUtilizationPercentage: 80  # Seuil de consommation CPU pour le scaling
+
+service:
+  type: NodePort    # Ou ClusterIP ou NodePort
+  port: 8000              # Exemple de port pour le service
